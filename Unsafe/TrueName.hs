@@ -92,7 +92,10 @@ decNames dec = case dec of
     ClosedTypeFamilyD _ _ _ tses -> tseNames =<< tses
 #endif
 
-#if MIN_VERSION_template_haskell(2,9,0)
+#if MIN_VERSION_template_haskell(2,15,0)
+    TySynInstD tse -> tseNames tse
+    RoleAnnotD _ _ -> []
+#elif MIN_VERSION_template_haskell(2,9,0)
     TySynInstD _ tse -> tseNames tse
     RoleAnnotD _ _ -> []
 #else
@@ -119,7 +122,12 @@ derivNames derivs = predNames =<<
     [ p | DerivClause _strat cxt <- derivs, p <- cxt ]
 #endif
 
-#if MIN_VERSION_template_haskell(2,9,0)
+
+#if MIN_VERSION_template_haskell(2,15,0)
+tseNames :: TySynEqn -> [Name]
+tseNames (TySynEqn _ (AppT (ConT _) ts) t) = typNames ts ++ typNames t
+tseNames (TySynEqn _ ts t) = typNames ts ++ typNames t
+#elif MIN_VERSION_template_haskell(2,9,0)
 tseNames :: TySynEqn -> [Name]
 tseNames (TySynEqn ts t) = (typNames =<< ts) ++ typNames t
 #endif
