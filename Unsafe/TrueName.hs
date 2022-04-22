@@ -329,7 +329,7 @@ truename = QuasiQuoter
         _ -> err $ occString occ ++ " has a strange flavour"
     makeP (name, vars) = if vars == [".."]
             then RecP name . capture VarP <$> recFields name
-            else return $ ConP name (map pat vars) where
+            else return $ ConP name [] (map pat vars) where
         pat n = case n of
             "_" -> WildP
             '!' : ns -> BangP (pat ns)
