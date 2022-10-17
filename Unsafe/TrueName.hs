@@ -329,10 +329,10 @@ truename = QuasiQuoter
         _ -> err $ occString occ ++ " has a strange flavour"
     makeP (name, vars) = if vars == [".."]
             then RecP name . capture VarP <$> recFields name
-#if __GLASGOW_HASKELL__ < 900
-            else return $ ConP name (map pat vars) where
-#else
+#if MIN_VERSION_template_haskell(2,19,0)
             else return $ ConP name [] (map pat vars) where
+#else
+            else return $ ConP name (map pat vars) where
 #endif
         pat n = case n of
             "_" -> WildP
